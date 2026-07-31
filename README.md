@@ -103,13 +103,13 @@ Full Recall@1/10/64, fixed-threshold false signals, equal-false-positive compari
 
 ## Cost
 
-Measurements below use an NVIDIA RTX 3060 12 GB. Gallery and query embeddings are computed once; exact-search timings cover the full query set against one million references.
+Permanent descriptor size and peak extraction memory were measured on an NVIDIA RTX 3060 12 GB. Extraction durations are intentionally omitted: the retained million-image run was dominated by HDD archive I/O, while the earlier NVMe observation has no preserved raw timing artifact. See [`docs/RESULTS.md`](docs/RESULTS.md) for that clearly labelled informal observation.
 
-| Model | fp16 descriptor | Encode 50k queries | Encode 1M references | Exact search | Peak extraction VRAM |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| S224 | 512 B | 90.7 s | 64.3 min | 36.9 s | 395 MiB |
-| S336 | 512 B | 160.2 s | 82.7 min | 37.1 s | 743 MiB |
-| SSCD | 1,024 B | 174.4 s | 76.3 min | 42.3 s | 1,676 MiB |
+| Model | fp16 descriptor | Peak extraction VRAM |
+| --- | ---: | ---: |
+| S224 | 512 B | 395 MiB |
+| S336 | 512 B | 743 MiB |
+| SSCD | 1,024 B | 1,676 MiB |
 
 ## When Rosetta fits
 
