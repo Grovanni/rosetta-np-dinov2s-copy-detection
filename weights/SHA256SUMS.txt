@@ -1,0 +1,3 @@
+4342f100daa15ea246cdec90478d85dff37e3ac32a41005c6e1786c5a2acc7f7  rosetta-dinov2s-s224-256d-v1.safetensors
+96ededa0fd442c9966f9bf7c4e3f7647bb95c000a1503f43dc48f7b45d2022f4  rosetta-dinov2s-s336-256d-v1.safetensors
+
