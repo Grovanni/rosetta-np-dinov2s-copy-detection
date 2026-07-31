@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.pip-cache/
+.install-test/
+.venv/
+dist/
+build/
+*.npy
+*.safetensors
+!weights/SHA256SUMS.txt
