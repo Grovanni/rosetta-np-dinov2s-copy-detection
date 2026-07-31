@@ -2,7 +2,7 @@
 
 ## DINOv2
 
-Rosetta NP uses the DINOv2 ViT-S/14 architecture and is initialized from `facebook/dinov2-small`.
+Rosetta uses the DINOv2 ViT-S/14 architecture and is initialized from `facebook/dinov2-small`.
 
 - Repository: https://github.com/facebookresearch/dinov2
 - Paper: *DINOv2: Learning Robust Visual Features without Supervision* (Oquab et al., 2023), https://arxiv.org/abs/2304.07193
@@ -29,4 +29,3 @@ SSCD weights are not redistributed here.
 ## Python dependencies
 
 This package depends on PyTorch, Transformers, safetensors, Pillow and NumPy. Each dependency remains under its own license.
-
