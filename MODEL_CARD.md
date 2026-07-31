@@ -2,7 +2,7 @@
 
 ## Model summary
 
-Rosetta NP S224 and S336 are global image descriptors for copy detection and near-duplicate retrieval. Both use a DINOv2 ViT-S/14 backbone, the CLS token, and a learned projection head:
+Rosetta S224 and S336 are global image descriptors for copy detection and near-duplicate retrieval. Both use a DINOv2 ViT-S/14 backbone, the CLS token, and a learned projection head:
 
 `LayerNorm(384) → Linear(384, 512) → GELU → Linear(512, 256) → L2 normalization`.
 
@@ -66,4 +66,3 @@ The two Release assets are immutable for v1.0.0 and verified by SHA-256. The pub
 ## License
 
 Code and Rosetta weights: Apache-2.0. DINOv2 code and upstream weights: Apache-2.0. Dataset licenses are separate. See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
-
