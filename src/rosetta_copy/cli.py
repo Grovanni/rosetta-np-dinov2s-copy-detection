@@ -11,7 +11,7 @@ from .model import RosettaEncoder, download_weights, list_variants
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="rosetta-copy",
-        description="Rosetta NP compact image-copy descriptors",
+        description="Rosetta compact image-copy descriptors",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
@@ -52,4 +52,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
