@@ -141,9 +141,18 @@
   },
   "cost": {
     "hardware": "NVIDIA GeForce RTX 3060 12 GB",
-    "S224": {"descriptor_bytes_fp16": 512, "query_encode_disc_seconds": 90.69, "query_encode_ndec_seconds": 89.24, "gallery_1m_encode_seconds": 3858.45, "search_disc_seconds": 36.88, "search_ndec_seconds": 36.26, "peak_extraction_vram_mib": 395},
-    "S336": {"descriptor_bytes_fp16": 512, "query_encode_disc_seconds": 160.23, "query_encode_ndec_seconds": 158.51, "gallery_1m_encode_seconds": 4963.87, "search_disc_seconds": 37.05, "search_ndec_seconds": 36.33, "peak_extraction_vram_mib": 743},
-    "SSCD-DISC-MIXUP-R50-GLOBAL": {"descriptor_bytes_fp16": 1024, "query_encode_disc_seconds": 174.39, "query_encode_ndec_seconds": 171.84, "gallery_1m_encode_seconds": 4580.07, "search_disc_seconds": 42.30, "search_ndec_seconds": 42.19, "peak_extraction_vram_mib": 1676}
+    "formal_scope": "Descriptor size, peak extraction VRAM and exact-search time are backed by retained run artifacts. Million-image extraction durations are omitted because the retained runs were HDD and integrity-I/O bound.",
+    "S224": {"descriptor_bytes_fp16": 512, "search_disc_seconds": 36.88, "search_ndec_seconds": 36.26, "peak_extraction_vram_mib": 395},
+    "S336": {"descriptor_bytes_fp16": 512, "search_disc_seconds": 37.05, "search_ndec_seconds": 36.33, "peak_extraction_vram_mib": 743},
+    "SSCD-DISC-MIXUP-R50-GLOBAL": {"descriptor_bytes_fp16": 1024, "search_disc_seconds": 42.30, "search_ndec_seconds": 42.19, "peak_extraction_vram_mib": 1676},
+    "informal_nvme_observation": {
+      "status": "ANECDOTAL_UNSEALED_NO_RAW_ARTIFACT",
+      "population": "approximately 50000 images",
+      "S224_seconds": 90.7,
+      "S336_seconds": 160.2,
+      "SSCD_seconds": 174.4,
+      "claim_policy": "context only; not a formal or reproducible benchmark result"
+    }
   },
   "integrity": {
     "run_manifest_sha256": "367cfe0e7d6acb83c6b06123d0dfafc66b28bdfb6ba4d7697925aff98265dd00",
