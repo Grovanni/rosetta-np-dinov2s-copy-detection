@@ -1,92 +1,141 @@
-# Rosetta NP — compact image copy detection
+# Rosetta
 
-Rosetta NP is a pair of compact [DINOv2](https://github.com/facebookresearch/dinov2)-S/14 image descriptors fine-tuned for image copy detection. Each image becomes one L2-normalized 256-dimensional vector; retrieval is a cosine-similarity search with no pairwise reranker.
+**Compact 256-dimensional descriptors for robust image copy retrieval.**
 
-Two checkpoints are published because they cover different operating points:
+Rosetta retrieves likely source images after crops, containment, screenshots, rotations, re-encoding and chained structural transformations. It fine-tunes a [DINOv2](https://github.com/facebookresearch/dinov2) ViT-S/14 backbone and represents each image with one L2-normalized 256-dimensional vector, enabling cosine search without a pairwise reranker.
 
-| Variant | Input | Descriptor | Checkpoint | Best fit |
-| --- | ---: | ---: | ---: | --- |
-| **S224** | 224 px | 256d / 512 B in fp16 | 85.4 MiB | lowest latency and memory |
-| **S336** | 336 px | 256d / 512 B in fp16 | 87.2 MiB | stronger DISC21 recall and augmentation robustness |
+Rosetta is a specialized retrieval model, not a universal replacement for SSCD. It provides stronger recall in some measured regimes and loses less recall under the published transformation pipeline, while SSCD retains higher absolute micro-AP across the reported benchmarks.
 
-S336 is the recommended default when accuracy matters most. S224 remains useful for large-scale or latency-sensitive indexing. The weights are separate Release assets: users only download the variant they select.
+The `NP` suffix retained in the repository URL refers to the original internal `no_privacy` experiment profile. The public model family is simply **Rosetta**.
 
 ## Install
 
-```bash
-git clone https://github.com/Grovanni/rosetta-np-dinov2s-copy-detection.git
-cd rosetta-np-dinov2s-copy-detection
-pip install -e .
-```
-
-Download one checkpoint:
+Install the tagged public release directly from GitHub:
 
 ```bash
-rosetta-copy download s336
+pip install "git+https://github.com/Grovanni/rosetta-np-dinov2s-copy-detection.git@v1.0.0"
 ```
 
-Or pass a local checkpoint explicitly. Release assets and SHA-256 checksums are listed in [`weights/SHA256SUMS.txt`](weights/SHA256SUMS.txt).
+The first `from_pretrained` call downloads only the selected checkpoint and verifies its SHA-256 digest. You can also download it explicitly:
 
-## Use
+```bash
+rosetta-copy download s224
+```
+
+Release assets and checksums are listed in [`weights/SHA256SUMS.txt`](weights/SHA256SUMS.txt).
+
+## Search a reference folder
+
+This small exact-search example encodes a reference folder, submits one query and prints its five nearest candidates:
 
 ```python
+from pathlib import Path
+
+import numpy as np
+
 from rosetta_copy import RosettaEncoder
 
-encoder = RosettaEncoder.from_pretrained("s336", device="cuda")
-vectors = encoder.encode(["query.jpg", "reference.jpg"])
-similarity = float(vectors[0] @ vectors[1])
-print(similarity)
+extensions = {".jpg", ".jpeg", ".png", ".webp", ".bmp", ".tif", ".tiff"}
+references = sorted(
+    path for path in Path("references").iterdir()
+    if path.is_file() and path.suffix.lower() in extensions
+)
+if not references:
+    raise RuntimeError("No reference images found")
+
+encoder = RosettaEncoder.from_pretrained("s224", device="cuda")
+reference_vectors = encoder.encode(references, batch_size=64)
+query_vector = encoder.encode(["query.jpg"])[0]
+
+scores = reference_vectors @ query_vector
+top_k = np.argsort(scores)[-min(5, len(scores)):][::-1]
+for rank, index in enumerate(top_k, start=1):
+    print(f"{rank}: {references[index]}  cosine={scores[index]:.4f}")
 ```
 
-The returned array is `float32`, shape `(N, 256)`, and L2-normalized. For storage, casting to `float16` uses 512 bytes per image. A minimal CLI is included:
+The returned arrays are `float32`, shape `(N, 256)`, and L2-normalized. Cast reference vectors to `float16` for 512-byte persistent descriptors. NumPy exact search is sufficient for a small gallery; large deployments can place the same vectors in FAISS, HNSW or another cosine/inner-product index.
+
+A nearest-neighbour score is a retrieval signal, not a portable match decision. Calibrate any acceptance threshold on a disjoint set representative of the deployment gallery.
+
+The CLI can also produce reusable embedding arrays:
 
 ```bash
-rosetta-copy embed s336 image.jpg --output embedding.npy
+rosetta-copy embed s224 reference-001.jpg reference-002.jpg --output references.npy
 ```
+
+## Choose a variant
+
+Neither checkpoint is the universal default. They share the same descriptor size but target different operating points:
+
+| Variant | Input | Checkpoint | Operating point |
+| --- | ---: | ---: | --- |
+| **S224 — balanced / fast** | 224 px | 85.4 MiB | fastest extraction; strongest Rosetta result on natural NDEC |
+| **S336 — structural robustness** | 336 px | 87.2 MiB | strongest Rosetta result on DISC21 and augmented NDEC; higher extraction cost |
+
+Both produce one 256d descriptor: 1,024 bytes in `float32` or 512 bytes in `float16`. The checkpoints are separate Release assets, so users download only the selected variant.
 
 Preprocessing is part of the model contract: PIL decode, RGB conversion, aspect-preserving padding to 224×224 or 336×336 with `(124, 116, 104)`, Lanczos resampling, then ImageNet mean/std normalization.
 
-## Main benchmark
+## Benchmark position
 
-All models searched the same exact one-million-image DISC21 reference gallery. The test contains 50,000 DISC21-test queries and 49,252 NDEC queries. The augmented condition re-encodes one deterministic transformed copy of every query; it does **not** compare an image only to its own transform. Every query still retrieves against the complete frozen gallery, so recall and false signals remain measurable.
+All models searched the same exact one-million-image DISC21 reference gallery. The evaluation contains 50,000 DISC21-test queries and 49,252 NDEC queries. The augmented condition re-encodes one deterministic transformed copy of every query and still searches the complete frozen gallery; it is not a self-pair similarity test.
 
-### Natural queries — Recall@1
+The table reports both Recall@1 and micro-AP to expose the recall/ranking trade-off directly. SSCD is the official `disc_mixup` ResNet-50 global descriptor.
 
-| Dataset | S224 | S336 | official SSCD `disc_mixup` |
-| --- | ---: | ---: | ---: |
-| DISC21 test | 45.74% | **48.35%** | 65.29% |
-| NDEC | **94.35%** | 90.02% | 76.18% |
+| Dataset and condition | Model | Recall@1 | micro-AP |
+| --- | --- | ---: | ---: |
+| DISC21 test — natural | S224 | 45.74% | 37.26% |
+|  | S336 | 48.35% | 39.97% |
+|  | SSCD | **65.29%** | **59.46%** |
+| DISC21 test — augmented | S224 | 37.64% | 28.62% |
+|  | S336 | 41.34% | 31.98% |
+|  | SSCD | **45.56%** | **38.95%** |
+| NDEC — natural | S224 | **94.35%** | 39.12% |
+|  | S336 | 90.02% | 32.13% |
+|  | SSCD | 76.18% | **44.24%** |
+| NDEC — augmented | S224 | 76.98% | 26.80% |
+|  | S336 | **78.32%** | 24.07% |
+|  | SSCD | 57.28% | **27.54%** |
 
-### Augmented queries — Recall@1
+Rosetta's main advantage in these results is high recall in the NDEC regimes and relative retention under added structural transformations. On DISC21, S336 loses 7.01 Recall@1 points under augmentation, versus 19.73 points for SSCD; on NDEC the corresponding losses are 11.70 and 18.91 points. SSCD nevertheless keeps the highest micro-AP in every row and remains substantially stronger on natural DISC21 queries.
 
-| Dataset | S224 | S336 | official SSCD `disc_mixup` |
-| --- | ---: | ---: | ---: |
-| DISC21 test | 37.64% | 41.34% | **45.56%** |
-| NDEC | 76.98% | **78.32%** | 57.28% |
+Full Recall@1/10/64, fixed-threshold false signals, equal-false-positive comparisons, confidence intervals and per-family results are available in [`docs/RESULTS.md`](docs/RESULTS.md) and [`benchmarks/results.json`](benchmarks/results.json).
 
-S336 loses 7.01 points of Recall@1 under augmentation on DISC21, versus 19.73 points for SSCD. On NDEC, the drops are 11.70 and 18.91 points respectively. This is a robustness result, not a claim that Rosetta universally dominates SSCD: SSCD remains substantially ahead on natural DISC21 queries.
+## Cost
 
-Full Recall@1/10/64, micro-AP, fixed-threshold false signals, equal-false-positive comparisons, uncertainty intervals, per-family results and runtime measurements are in [`docs/RESULTS.md`](docs/RESULTS.md) and [`benchmarks/results.json`](benchmarks/results.json).
+Measurements below use an NVIDIA RTX 3060 12 GB. Gallery and query embeddings are computed once; exact-search timings cover the full query set against one million references.
+
+| Model | fp16 descriptor | Encode 50k queries | Encode 1M references | Exact search | Peak extraction VRAM |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| S224 | 512 B | 90.7 s | 64.3 min | 36.9 s | 395 MiB |
+| S336 | 512 B | 160.2 s | 82.7 min | 37.1 s | 743 MiB |
+| SSCD | 1,024 B | 174.4 s | 76.3 min | 42.3 s | 1,676 MiB |
+
+## When Rosetta fits
+
+Use Rosetta when compact permanent descriptors, inexpensive global retrieval and recall under structural transformations matter. S224 is the economical operating point; S336 trades more extraction compute for greater structural robustness.
+
+Prefer SSCD when its stronger natural DISC21 ranking and higher measured micro-AP match the deployment objective. For small copied regions, extreme crops, composites or high-stakes automatic merges, use either global model only as candidate generation and add regional or geometric verification.
 
 ## Documentation
 
-- [`MODEL_CARD.md`](MODEL_CARD.md): intended use, variants and limitations.
+- [`MODEL_CARD.md`](MODEL_CARD.md): architecture, intended use and limitations.
 - [`docs/TRAINING.md`](docs/TRAINING.md): data pools, sampling, losses and compute.
 - [`docs/BENCHMARK_PROTOCOL.md`](docs/BENCHMARK_PROTOCOL.md): frozen gallery, labels, metrics and statistical protocol.
 - [`docs/AUGMENTATIONS.md`](docs/AUGMENTATIONS.md): training families and external robustness pipeline.
 - [`docs/RESULTS.md`](docs/RESULTS.md): complete public result tables and interpretation.
 
-## Scope and limitations
+## Limitations
 
-- Rosetta finds likely source/copy relationships; it does not determine copyright ownership, provenance or whether two files should be automatically deleted.
-- Scores are model- and gallery-dependent. Calibrate thresholds on a disjoint validation set representative of the deployment gallery.
-- The checkpoints output one global descriptor. Small localized splices, composites and extreme crops may require regional retrieval or geometric verification.
-- DISC21-derived data was used for training. NDEC reuses the DISC21 gallery and part of its domain, so it is not a fully independent out-of-domain benchmark.
-- The published external benchmark was frozen before evaluation, but the natural benchmark results were already known during development. It should not be described as a blind challenge submission.
+- Rosetta retrieves likely source/copy relationships; it does not determine copyright ownership, provenance or whether files should be automatically deleted.
+- Scores are model- and gallery-dependent. A threshold from the public benchmark is not a deployment default.
+- One global descriptor can miss small localized splices, composites and extreme crops.
+- Training used DISC21-derived data. NDEC reuses the DISC21 gallery and part of its domain, so it is not a fully independent out-of-domain benchmark.
+- The augmented benchmark uses one balanced composite view per query, not a complete factorial sweep of every transformation family.
+- Natural benchmark results were known during development; this is not a blind challenge submission.
 
 ## License and citation
 
 Code and Rosetta checkpoint files are released under Apache-2.0. DINOv2 code and pretrained weights are also Apache-2.0; see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md). DISC21 and NDEC images are not redistributed by this repository and remain subject to their own terms.
 
-If this repository is useful, cite the repository using [`CITATION.cff`](CITATION.cff), and cite DINOv2, DISC21 and SSCD where appropriate.
-
+If this repository is useful, cite it using [`CITATION.cff`](CITATION.cff), and cite DINOv2, DISC21 and SSCD where appropriate.
