@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rosetta-copy"
+version = "1.0.0"
+description = "Compact DINOv2-S descriptors for image copy detection"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+authors = [{name = "Grovanni"}]
+dependencies = [
+  "numpy>=1.26",
+  "Pillow>=10.0",
+  "safetensors>=0.4",
+  "torch>=2.2",
+  "transformers>=4.44",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[project.urls]
+Repository = "https://github.com/Grovanni/rosetta-np-dinov2s-copy-detection"
+Documentation = "https://github.com/Grovanni/rosetta-np-dinov2s-copy-detection#readme"
+
+[project.scripts]
+rosetta-copy = "rosetta_copy.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+rosetta_copy = ["configs/*.json"]
+
