@@ -80,26 +80,26 @@ Preprocessing is part of the model contract: PIL decode, RGB conversion, aspect-
 
 All models searched the same exact one-million-image DISC21 reference gallery. The evaluation contains 50,000 DISC21-test queries and 49,252 NDEC queries. The augmented condition re-encodes one deterministic transformed copy of every query and still searches the complete frozen gallery; it is not a self-pair similarity test.
 
-The table reports both Recall@1 and micro-AP to expose the recall/ranking trade-off directly. SSCD is the official `disc_mixup` ResNet-50 global descriptor.
+The table reports Recall@1/10/64 and micro-AP to expose both candidate retrieval and global ranking quality. SSCD is the official `disc_mixup` ResNet-50 single-view global descriptor.
 
-| Dataset and condition | Model | Recall@1 | micro-AP |
-| --- | --- | ---: | ---: |
-| DISC21 test — natural | S224 | 45.74% | 37.26% |
-|  | S336 | 48.35% | 39.97% |
-|  | SSCD | **65.29%** | **59.46%** |
-| DISC21 test — augmented | S224 | 37.64% | 28.62% |
-|  | S336 | 41.34% | 31.98% |
-|  | SSCD | **45.56%** | **38.95%** |
-| NDEC — natural | S224 | **94.35%** | 39.12% |
-|  | S336 | 90.02% | 32.13% |
-|  | SSCD | 76.18% | **44.24%** |
-| NDEC — augmented | S224 | 76.98% | 26.80% |
-|  | S336 | **78.32%** | 24.07% |
-|  | SSCD | 57.28% | **27.54%** |
+| Dataset and condition | Model | Recall@1 | Recall@10 | Recall@64 | micro-AP |
+| --- | --- | ---: | ---: | ---: | ---: |
+| DISC21 test — natural | S224 | 45.74% | 55.54% | 62.30% | 37.26% |
+|  | S336 | 48.35% | 57.66% | 64.46% | 39.97% |
+|  | SSCD | **65.29%** | **70.32%** | **73.73%** | **59.46%** |
+| DISC21 test — augmented | S224 | 37.64% | 48.01% | 55.67% | 28.62% |
+|  | S336 | 41.34% | 51.59% | **58.58%** | 31.98% |
+|  | SSCD | **45.56%** | **52.80%** | 57.86% | **38.95%** |
+| NDEC — natural | S224 | **94.35%** | **96.93%** | **97.74%** | 39.12% |
+|  | S336 | 90.02% | 96.15% | 97.70% | 32.13% |
+|  | SSCD | 76.18% | 79.98% | 82.47% | **44.24%** |
+| NDEC — augmented | S224 | 76.98% | 85.81% | 90.46% | 26.80% |
+|  | S336 | **78.32%** | **88.92%** | **92.89%** | 24.07% |
+|  | SSCD | 57.28% | 64.03% | 68.80% | **27.54%** |
 
 Rosetta's main advantage in these results is high recall in the NDEC regimes and relative retention under added structural transformations. On DISC21, S336 loses 7.01 Recall@1 points under augmentation, versus 19.73 points for SSCD; on NDEC the corresponding losses are 11.70 and 18.91 points. SSCD nevertheless keeps the highest micro-AP in every row and remains substantially stronger on natural DISC21 queries.
 
-Full Recall@1/10/64, fixed-threshold false signals, equal-false-positive comparisons, confidence intervals and per-family results are available in [`docs/RESULTS.md`](docs/RESULTS.md) and [`benchmarks/results.json`](benchmarks/results.json).
+Fixed-threshold false signals, equal-false-positive comparisons, confidence intervals and per-family results are available in [`docs/RESULTS.md`](docs/RESULTS.md) and [`benchmarks/results.json`](benchmarks/results.json).
 
 ## Cost
 
