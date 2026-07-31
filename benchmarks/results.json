@@ -1,0 +1,162 @@
+{
+  "schema": "rosetta_np.public_benchmark.v1",
+  "released": "2026-07-31",
+  "protocol": {
+    "gallery": "DISC21 reference gallery",
+    "gallery_images": 1000000,
+    "search": "exact inner product on L2-normalized embeddings",
+    "top_k": 64,
+    "gallery_dtype": "float16",
+    "score_accumulation": "float32",
+    "tf32": false,
+    "augmented_view_per_query": 1,
+    "models_and_thresholds_frozen_before_augmented_scoring": true,
+    "bootstrap_replicates": 10000
+  },
+  "models": {
+    "S224": {
+      "dimensions": 256,
+      "input_side": 224,
+      "checkpoint_sha256": "4342f100daa15ea246cdec90478d85dff37e3ac32a41005c6e1786c5a2acc7f7",
+      "frozen_confidence_threshold": 0.1582845151424408
+    },
+    "S336": {
+      "dimensions": 256,
+      "input_side": 336,
+      "checkpoint_sha256": "96ededa0fd442c9966f9bf7c4e3f7647bb95c000a1503f43dc48f7b45d2022f4",
+      "frozen_confidence_threshold": 0.152330532670021
+    },
+    "SSCD-DISC-MIXUP-R50-GLOBAL": {
+      "dimensions": 512,
+      "input_side": 288,
+      "frozen_confidence_threshold": 0.13976825773715973
+    }
+  },
+  "datasets": {
+    "DISC21_test": {
+      "queries": 50000,
+      "positive_queries": 10000,
+      "no_source_queries": 40000,
+      "results": {
+        "S224": {
+          "natural": {"recall_at_1": 0.4574, "recall_at_10": 0.5554, "recall_at_64": 0.6230, "micro_ap": 0.37255},
+          "augmented": {"recall_at_1": 0.3764, "recall_at_10": 0.4801, "recall_at_64": 0.5567, "micro_ap": 0.28615},
+          "delta_points": {"recall_at_1": -8.10, "recall_at_10": -7.53, "recall_at_64": -6.63, "micro_ap": -8.640},
+          "recall_at_1_delta_ci95_points": [-8.75, -7.44],
+          "frozen_threshold": {"natural_tp": 2359, "natural_fp": 95, "augmented_tp": 1584, "augmented_fp": 52},
+          "equal_natural_fp": {"fp": 95, "natural_tp": 2359, "augmented_tp": 1786},
+          "false_signal_transitions": {"new": 12, "persistent": 40, "resolved": 55}
+        },
+        "S336": {
+          "natural": {"recall_at_1": 0.4835, "recall_at_10": 0.5766, "recall_at_64": 0.6446, "micro_ap": 0.39966},
+          "augmented": {"recall_at_1": 0.4134, "recall_at_10": 0.5159, "recall_at_64": 0.5858, "micro_ap": 0.31981},
+          "delta_points": {"recall_at_1": -7.01, "recall_at_10": -6.07, "recall_at_64": -5.88, "micro_ap": -7.985},
+          "recall_at_1_delta_ci95_points": [-7.64, -6.37],
+          "frozen_threshold": {"natural_tp": 2636, "natural_fp": 136, "augmented_tp": 1898, "augmented_fp": 84},
+          "equal_natural_fp": {"fp": 136, "natural_tp": 2636, "augmented_tp": 2105},
+          "false_signal_transitions": {"new": 24, "persistent": 60, "resolved": 76},
+          "augmented_recall_at_1_by_anchor": {
+            "identity_encoding": 0.4780,
+            "resampling_appearance": 0.4164,
+            "global_geometry": 0.3058,
+            "containment": 0.3198,
+            "screenshot_page": 0.4608,
+            "overlay_annotation": 0.4545,
+            "realistic_composition": 0.4587
+          }
+        },
+        "SSCD-DISC-MIXUP-R50-GLOBAL": {
+          "natural": {"recall_at_1": 0.6529, "recall_at_10": 0.7032, "recall_at_64": 0.7373, "micro_ap": 0.59463},
+          "augmented": {"recall_at_1": 0.4556, "recall_at_10": 0.5280, "recall_at_64": 0.5786, "micro_ap": 0.38950},
+          "delta_points": {"recall_at_1": -19.73, "recall_at_10": -17.52, "recall_at_64": -15.87, "micro_ap": -20.512},
+          "recall_at_1_delta_ci95_points": [-20.52, -18.95],
+          "frozen_threshold": {"natural_tp": 4876, "natural_fp": 396, "augmented_tp": 2768, "augmented_fp": 175},
+          "equal_natural_fp": {"fp": 396, "natural_tp": 4876, "augmented_tp": 3222},
+          "false_signal_transitions": {"new": 28, "persistent": 147, "resolved": 249},
+          "augmented_recall_at_1_by_anchor": {
+            "identity_encoding": 0.6326,
+            "resampling_appearance": 0.5514,
+            "global_geometry": 0.2484,
+            "containment": 0.1043,
+            "screenshot_page": 0.5217,
+            "overlay_annotation": 0.5791,
+            "realistic_composition": 0.5518
+          }
+        }
+      }
+    },
+    "NDEC": {
+      "queries": 49252,
+      "positive_queries": 5009,
+      "no_source_queries": 44243,
+      "no_source_breakdown": {"disc21_easy": 19991, "open_images_hard": 24252},
+      "results": {
+        "S224": {
+          "natural": {"recall_at_1": 0.94350, "recall_at_10": 0.96926, "recall_at_64": 0.97744, "micro_ap": 0.39123},
+          "augmented": {"recall_at_1": 0.76981, "recall_at_10": 0.85806, "recall_at_64": 0.90457, "micro_ap": 0.26801},
+          "delta_points": {"recall_at_1": -17.369, "recall_at_10": -11.120, "recall_at_64": -7.287, "micro_ap": -12.322},
+          "recall_at_1_delta_ci95_points": [-18.46, -16.31],
+          "frozen_threshold": {"natural_tp": 3052, "natural_fp": 7071, "augmented_tp": 1841, "augmented_fp": 4429},
+          "equal_natural_fp": {"fp": 7071, "natural_tp": 3052, "augmented_tp": 2498},
+          "false_signal_transitions": {"new": 379, "persistent": 4050, "resolved": 3021}
+        },
+        "S336": {
+          "natural": {"recall_at_1": 0.90018, "recall_at_10": 0.96147, "recall_at_64": 0.97704, "micro_ap": 0.32125},
+          "augmented": {"recall_at_1": 0.78319, "recall_at_10": 0.88920, "recall_at_64": 0.92893, "micro_ap": 0.24068},
+          "delta_points": {"recall_at_1": -11.699, "recall_at_10": -7.227, "recall_at_64": -4.811, "micro_ap": -8.057},
+          "recall_at_1_delta_ci95_points": [-12.74, -10.71],
+          "frozen_threshold": {"natural_tp": 2717, "natural_fp": 8759, "augmented_tp": 1940, "augmented_fp": 5858},
+          "equal_natural_fp": {"fp": 8759, "natural_tp": 2717, "augmented_tp": 2500},
+          "false_signal_transitions": {"new": 464, "persistent": 5394, "resolved": 3365},
+          "augmented_recall_at_1_by_anchor": {
+            "identity_encoding": 0.8994,
+            "resampling_appearance": 0.8059,
+            "global_geometry": 0.5670,
+            "containment": 0.6187,
+            "screenshot_page": 0.8643,
+            "overlay_annotation": 0.8448,
+            "realistic_composition": 0.8825
+          }
+        },
+        "SSCD-DISC-MIXUP-R50-GLOBAL": {
+          "natural": {"recall_at_1": 0.76183, "recall_at_10": 0.79976, "recall_at_64": 0.82472, "micro_ap": 0.44241},
+          "augmented": {"recall_at_1": 0.57277, "recall_at_10": 0.64025, "recall_at_64": 0.68796, "micro_ap": 0.27537},
+          "delta_points": {"recall_at_1": -18.906, "recall_at_10": -15.951, "recall_at_64": -13.675, "micro_ap": -16.703},
+          "recall_at_1_delta_ci95_points": [-20.00, -17.80],
+          "frozen_threshold": {"natural_tp": 3169, "natural_fp": 14363, "augmented_tp": 2014, "augmented_fp": 6832},
+          "equal_natural_fp": {"fp": 14363, "natural_tp": 3169, "augmented_tp": 2590},
+          "false_signal_transitions": {"new": 98, "persistent": 6734, "resolved": 7629},
+          "augmented_recall_at_1_by_anchor": {
+            "identity_encoding": 0.7458,
+            "resampling_appearance": 0.6746,
+            "global_geometry": 0.3394,
+            "containment": 0.2235,
+            "screenshot_page": 0.6587,
+            "overlay_annotation": 0.6727,
+            "realistic_composition": 0.6951
+          }
+        }
+      }
+    }
+  },
+  "cost": {
+    "hardware": "NVIDIA GeForce RTX 3060 12 GB",
+    "S224": {"descriptor_bytes_fp16": 512, "query_encode_disc_seconds": 90.69, "query_encode_ndec_seconds": 89.24, "gallery_1m_encode_seconds": 3858.45, "search_disc_seconds": 36.88, "search_ndec_seconds": 36.26, "peak_extraction_vram_mib": 395},
+    "S336": {"descriptor_bytes_fp16": 512, "query_encode_disc_seconds": 160.23, "query_encode_ndec_seconds": 158.51, "gallery_1m_encode_seconds": 4963.87, "search_disc_seconds": 37.05, "search_ndec_seconds": 36.33, "peak_extraction_vram_mib": 743},
+    "SSCD-DISC-MIXUP-R50-GLOBAL": {"descriptor_bytes_fp16": 1024, "query_encode_disc_seconds": 174.39, "query_encode_ndec_seconds": 171.84, "gallery_1m_encode_seconds": 4580.07, "search_disc_seconds": 42.30, "search_ndec_seconds": 42.19, "peak_extraction_vram_mib": 1676}
+  },
+  "integrity": {
+    "run_manifest_sha256": "367cfe0e7d6acb83c6b06123d0dfafc66b28bdfb6ba4d7697925aff98265dd00",
+    "augmentation_preregistration_sha256": "a603cbcec3ca0f982c64adca3a6029020ee55de4895d1679afa9bcf7e1c90738",
+    "pixel_matrix_sha256": "96cfa6c5ccec95b2f32a9c39046701948b55da4aa5b72b9b1f5ed53b90f326c0",
+    "qc_receipt_sha256": "444b92d1854ef80e4eeb4a1624e41f07383307f9546513da1053dae098b8dee8",
+    "comparison_code_sha256": "959056ff7932a7fc4a83ee06c5c1dd7ac845a47d384475c7d9905cdbd556979f",
+    "summary_artifacts_sha256": "3e18b94372f042a489f113fe1fae3c93ebdf5c93682eeaf2223de2d22350b4d1"
+  },
+  "limitations": [
+    "Natural results were known during development; this is not a blind competition submission.",
+    "NDEC reuses the DISC21 gallery and part of its domain.",
+    "The external augmentation condition contains one balanced composite view per query, not a full pure-family factorial sweep."
+  ]
+}
+
