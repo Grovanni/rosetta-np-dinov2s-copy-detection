@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use Rosetta NP, please cite this software and the upstream DINOv2 and DISC21 works."
+title: "Rosetta NP DINOv2-S 256D image copy descriptors"
+type: software
+authors:
+  - family-names: "Grovanni"
+version: 1.0.0
+date-released: 2026-07-31
+repository-code: "https://github.com/Grovanni/rosetta-np-dinov2s-copy-detection"
+license: Apache-2.0
+keywords:
+  - image copy detection
+  - image retrieval
+  - near-duplicate detection
+  - DINOv2
+
