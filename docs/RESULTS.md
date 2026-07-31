@@ -120,13 +120,19 @@ All intervals exclude zero. Statistical significance does not remove the domain-
 
 ## Compute and storage
 
-Measured on the same RTX 3060 evaluation machine. Query time covers approximately 50,000 images; gallery encoding covers one million images. Search is exact top-64 retrieval over the same gallery.
+The reproducible cost records retained from the RTX 3060 evaluation machine establish descriptor size, peak extraction memory and exact top-64 search time over the one-million-reference gallery.
 
-| Model | Descriptor fp16 | Query encode DISC / NDEC | 1M gallery encode | Search DISC / NDEC | Peak extraction VRAM |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| S224 | **512 B** | **90.69 / 89.24 s** | **3,858.45 s (64.3 min)** | **36.88 / 36.26 s** | **395 MiB** |
-| S336 | **512 B** | 160.23 / 158.51 s | 4,963.87 s (82.7 min) | 37.05 / 36.33 s | 743 MiB |
-| SSCD | 1,024 B | 174.39 / 171.84 s | 4,580.07 s (76.3 min) | 42.30 / 42.19 s | 1,676 MiB |
+| Model | Descriptor fp16 | Exact search DISC / NDEC | Peak extraction VRAM |
+| --- | ---: | ---: | ---: |
+| S224 | **512 B** | **36.88 / 36.26 s** | **395 MiB** |
+| S336 | **512 B** | 37.05 / 36.33 s | 743 MiB |
+| SSCD | 1,024 B | 42.30 / 42.19 s | 1,676 MiB |
 
-S336 retains the same permanent descriptor size as S224. Its cost is extraction compute: about 1.77× S224 on the query sets. Search time remains nearly identical because both Rosetta variants are 256-dimensional.
+S336 retains the same permanent descriptor size as S224. Search time remains nearly identical because both Rosetta variants are 256-dimensional.
+
+### Informal NVMe observation — not a benchmark result
+
+During development, one local NVMe run over approximately 50,000 images reported about **90.7 s for S224**, **160.2 s for S336** and **174.4 s for SSCD** on the same class of RTX 3060 machine. The raw timing artifact was not retained, so these values are anecdotal: they are not sealed, independently reproducible from this repository or used to support a formal speed claim.
+
+The retained million-image extraction durations are deliberately not reported as model throughput. Those runs read 20 large TAR archives from an HDD and timed integrity hashing, archive traversal, decoding, inference and output serialization together, making them materially I/O-bound.
 
