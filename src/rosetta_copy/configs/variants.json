@@ -1,0 +1,17 @@
+{
+  "s224": {
+    "input_side": 224,
+    "descriptor_dimensions": 256,
+    "filename": "rosetta-dinov2s-s224-256d-v1.safetensors",
+    "sha256": "4342f100daa15ea246cdec90478d85dff37e3ac32a41005c6e1786c5a2acc7f7",
+    "url": "https://github.com/Grovanni/rosetta-np-dinov2s-copy-detection/releases/download/v1.0.0/rosetta-dinov2s-s224-256d-v1.safetensors"
+  },
+  "s336": {
+    "input_side": 336,
+    "descriptor_dimensions": 256,
+    "filename": "rosetta-dinov2s-s336-256d-v1.safetensors",
+    "sha256": "96ededa0fd442c9966f9bf7c4e3f7647bb95c000a1503f43dc48f7b45d2022f4",
+    "url": "https://github.com/Grovanni/rosetta-np-dinov2s-copy-detection/releases/download/v1.0.0/rosetta-dinov2s-s336-256d-v1.safetensors"
+  }
+}
+
