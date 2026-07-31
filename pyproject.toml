@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "rosetta-copy"
 version = "1.0.0"
-description = "Compact DINOv2-S descriptors for image copy detection"
+description = "Compact 256D descriptors for robust image copy retrieval"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "Apache-2.0"}
@@ -39,4 +39,3 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 rosetta_copy = ["configs/*.json"]
-
