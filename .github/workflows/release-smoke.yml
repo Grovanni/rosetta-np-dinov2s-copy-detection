@@ -1,0 +1,42 @@
+name: Released checkpoint smoke test
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "13 4 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  s224-cpu:
+    name: S224 release / CPU
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/rosetta-copy
+          key: rosetta-s224-v1-${{ runner.os }}
+
+      - name: Install CPU runtime
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu "torch>=2.2"
+          python -m pip install ".[test]"
+
+      - name: Exercise the installed download command
+        run: rosetta-copy download s224
+
+      - name: Load the public checkpoint and encode reference inputs
+        env:
+          ROSETTA_RUN_RELEASE_TESTS: "1"
+        run: python -m pytest tests/test_release_integration.py -m release

@@ -24,6 +24,13 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 
+[project.optional-dependencies]
+test = [
+  "build>=1.2",
+  "pytest>=8.2",
+  "pytest-cov>=5.0",
+]
+
 [project.urls]
 Repository = "https://github.com/Grovanni/rosetta-np-dinov2s-copy-detection"
 Documentation = "https://github.com/Grovanni/rosetta-np-dinov2s-copy-detection#readme"
@@ -39,3 +46,11 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 rosetta_copy = ["configs/*.json"]
+
+[tool.pytest.ini_options]
+addopts = "-ra --strict-markers"
+testpaths = ["tests"]
+markers = [
+  "cuda: requires a CUDA-capable PyTorch runtime",
+  "release: downloads and exercises an official release checkpoint",
+]

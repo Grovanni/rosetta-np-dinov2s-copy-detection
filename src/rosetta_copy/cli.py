@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+from typing import Sequence
 
 import numpy as np
 
@@ -31,12 +32,12 @@ def _parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main() -> None:
-    args = _parser().parse_args()
+def main(argv: Sequence[str] | None = None) -> int:
+    args = _parser().parse_args(argv)
     if args.command == "download":
         path = download_weights(args.variant, args.cache_dir, force=args.force)
         print(path)
-        return
+        return 0
 
     encoder = RosettaEncoder.from_pretrained(
         args.variant,
@@ -48,7 +49,8 @@ def main() -> None:
     args.output.parent.mkdir(parents=True, exist_ok=True)
     np.save(args.output, vectors)
     print(f"saved {vectors.shape} {vectors.dtype} -> {args.output}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
