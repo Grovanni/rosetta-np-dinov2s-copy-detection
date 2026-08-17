@@ -1,5 +1,7 @@
 # Rosetta
 
+[![CI](https://github.com/Grovanni/rosetta-np-dinov2s-copy-detection/actions/workflows/ci.yml/badge.svg)](https://github.com/Grovanni/rosetta-np-dinov2s-copy-detection/actions/workflows/ci.yml)
+
 **Compact 256-dimensional descriptors for robust image copy retrieval.**
 
 Rosetta retrieves likely source images after crops, containment, screenshots, rotations, re-encoding and chained structural transformations. It fine-tunes a [DINOv2](https://github.com/facebookresearch/dinov2) ViT-S/14 backbone and represents each image with one L2-normalized 256-dimensional vector, enabling cosine search without a pairwise reranker.
@@ -124,6 +126,13 @@ Prefer SSCD when its stronger natural DISC21 ranking and higher measured micro-A
 - [`docs/BENCHMARK_PROTOCOL.md`](docs/BENCHMARK_PROTOCOL.md): frozen gallery, labels, metrics and statistical protocol.
 - [`docs/AUGMENTATIONS.md`](docs/AUGMENTATIONS.md): training families and external robustness pipeline.
 - [`docs/RESULTS.md`](docs/RESULTS.md): complete public result tables and interpretation.
+- [`docs/TESTING.md`](docs/TESTING.md): offline tests, release-checkpoint smoke test and CI policy.
+
+## Software quality
+
+The automated suite is separate from the scientific benchmarks. Pull requests exercise checkpoint integrity and corruption handling, image preprocessing, strict weight loading, deterministic normalized embeddings, batch-size equivalence, common input failures and both CLI commands. CI also builds and reinstalls the wheel on Python 3.10 and 3.12.
+
+The official S224 Release asset is additionally downloaded, loaded and encoded in a scheduled/manual end-to-end workflow. See [`docs/TESTING.md`](docs/TESTING.md) for commands and the boundary between fast offline tests and the network-dependent release check.
 
 ## Limitations
 

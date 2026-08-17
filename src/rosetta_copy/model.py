@@ -86,7 +86,7 @@ def download_weights(
         request = urllib.request.Request(
             config["url"], headers={"User-Agent": "rosetta-copy/1.0"}
         )
-        with urllib.request.urlopen(request) as response, temporary.open("wb") as out:
+        with urllib.request.urlopen(request, timeout=60) as response, temporary.open("wb") as out:
             shutil.copyfileobj(response, out, length=8 * 1024 * 1024)
         observed = _sha256(temporary)
         if observed != config["sha256"]:
@@ -211,11 +211,15 @@ class RosettaEncoder:
         *,
         batch_size: int = 32,
     ) -> np.ndarray:
-        items = list(images)
-        if not items:
-            return np.empty((0, 256), dtype=np.float32)
         if batch_size < 1:
             raise ValueError("batch_size must be >= 1")
+        if isinstance(images, (str, Path, Image.Image)):
+            raise TypeError("images must be an iterable of images, not a single image")
+
+        items = list(images)
+        if not items:
+            dimensions = int(self.config["descriptor_dimensions"])
+            return np.empty((0, dimensions), dtype=np.float32)
 
         outputs: list[torch.Tensor] = []
         for start in range(0, len(items), batch_size):
